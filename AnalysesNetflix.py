@@ -25,6 +25,9 @@ netflix.shape
 
 netflix.index
 
+#Verificar as colunas presentes no dataset
+netflix.columns
+
 #Verificando quaias colunas tem valores Nulos ou Vazios
 netflix.isna().any()
 
@@ -33,6 +36,9 @@ netflix.isnull().sum()
 
 #Retirando todas as linhas com valores Nulos
 netflix.dropna(subset =['show_id','type','title','director','cast','country','date_added','release_year','rating','duration','listed_in','description'], inplace = True)
+
+#Verificando se os valores Nulos sairam
+netflix.isna().any()
 
 #Novo total de colunas
 netflix.shape
@@ -57,6 +63,7 @@ netflix["country"] = netflix["country"].astype("category")
 netflix["listed_in"] = netflix["listed_in"].astype("category")
 netflix
 
+#Verificando os tipos dos dados
 netflix.dtypes
 
 #Criando coluna do mes
@@ -76,6 +83,7 @@ plt.xlabel('Tipo')
 plt.ylabel('Quantidade')
 plt.show()
 
+#Contagem dos valores de Movie e TV Show
 cont_teste = netflix['type'].value_counts()
 print(cont_teste)
 
@@ -92,6 +100,7 @@ plt.xlabel('Ano')
 plt.ylabel('Quantidade')
 plt.show()
 
+#Contagem dos valores por ano
 contagem_anos = netflix['release_year'].value_counts().head(10)
 print(contagem_anos)
 
@@ -108,8 +117,21 @@ plt.xlabel('Rating')
 plt.ylabel('Quantidade')
 plt.show()
 
-# Criação do grafico
 contagem_rating.plot.barh(stacked = True)
 plt.xlabel('Rating')
 plt.ylabel('Quantidade')
-plt.gca().invert_yaxis() #Caso quiser inverter o valor dos dados
+#plt.gca().invert_yaxis()
+
+#Criação de grafico de comparação por ano de TV Show e Movies
+dados_agrupados = netflix.groupby(['release_year', 'type']).size().reset_index(name='contagem')
+
+# vamos criar o gráfico de barras comparando TV Show e Movies por ano
+for tipo in dados_agrupados['type'].unique():
+    plt.bar(dados_agrupados[dados_agrupados['type'] == tipo]['release_year'],
+            dados_agrupados[dados_agrupados['type'] == tipo]['contagem'],
+            label=tipo)
+plt.xlabel('Ano')
+plt.ylabel('Contagem')
+plt.title('Comparação entre Gêneros por Ano')
+plt.legend()
+plt.show()
